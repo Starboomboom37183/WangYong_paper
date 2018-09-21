@@ -1,0 +1,40 @@
+\begin{algorithm2e}
+	\label{labelpropagation}
+	\caption{考虑用户偏差的改进重排名算法}
+	\KwIn{ watchlist $W$, average ratings set $M$, $\theta$, $U$, $S$, $m$, $n$}
+	\KwOut{recommendation list L}
+	\SetKwFunction{GenerateAverageRatingMatrix}{GenerateAverageRatingMatrix}
+	\SetKwFunction{GenerateTemporalWeightedMatrix}{GenerateTemporalWeightedMatrix}
+	\SetKwFunction{GenerateFrequencyWeightedMatrix}{GenerateFrequencyWeightedMatrix}
+	\SetKwFunction{GenerateRatingsMatrix}{GenerateRatingsMatrix}
+	\SetKwFunction{GetPredictRatings}{GetPredictRatings}
+	\SetKwFunction{SelectTopK}{SelectTopK}
+
+	\textbf{\emph{/*===== Ratings Calculation====*/}}\\
+	$A_{m \times n} \gets \GenerateAverageRatingMatrix{$M$}$\;
+	$B_{m \times n} \gets \GenerateTemporalWeightedMatrix{$W_u$}$\;
+	$C_{m \times n} \gets \GenerateFrequencyWeightedMatrix{$W_u$}$\;
+	$R_{m \times n} \gets \left( \lambda B_{m \times n}+\left ( 1-\lambda \right )C_{m \times n} \right )\cdot A_{m \times n}$\;
+
+	\textbf{\emph{/*===== Ratings Prediction====*/}}\\
+	$P_{m \times n} \gets \GetPredictRatings{$R$}$\;		 
+	\textbf{\emph{/*===== Reranking====*/}}
+
+	\For{each $ u \in U $}{
+ 		compute $b_u$ and  $d_u$\;
+ 		$T_R(\theta) \gets \min (b_u+\frac{T_{max}-b_u}{d_u}\theta,T_{max})$\;
+		\For{ each $s \in S$}{
+			\If { $P_{us} \geq T_R(\theta) $}{
+				$rank_x(s)$\;
+			}
+			\Else{
+				$rank_{standstard}(s)$\;
+			}
+		}
+		$L \gets \SelectTopK{}$\;
+ 	}
+	
+\end{algorithm2e}
+
+
+Compositional similariy matrix $C_{M \times N} \gets \GetCompositionalSimilarity{$T$}$\;
